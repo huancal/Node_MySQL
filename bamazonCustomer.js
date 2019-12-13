@@ -1,4 +1,4 @@
-var mysqel = require("mysql");
+var mysql = require("mysql");
 var inquirer = require("inquirer");
 
 const connection = mysql.createConnection({
@@ -11,7 +11,11 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
     if (err) throw err;
-    console.log(`You have been connected to thread ID: ${connection.threadID}`);
+    // console.log('success');
+
+    console.log(`You have been connected to threadID: ${connection.threadID}`);
+    makeTable();
+    connection.end();
 });
 
 var makeTable = function () {
