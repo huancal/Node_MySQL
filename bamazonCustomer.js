@@ -54,16 +54,16 @@ stockPrompt = (itemInventory, ITEM_ID) => {
         name: 'unitstobuy'
     }]).then(answers => {
         answers.unitstobuy
-        // console.log(answers.stockID);
-        if (answers.unitstobuy > itemInventory)
+        if (answers.unitstobuy > itemInventory) {
             console.log("Sorry Insufficient quantity!")
-        else {
+            makeTable();
+        } else {
             var quantityLeft = itemInventory - answers.unitstobuy;
             connection.query("UPDATE PRODUCTS SET STOCK_QUANTITY = ? WHERE ITEM_ID = ?", [quantityLeft, ITEM_ID], function (err, res) {
                 if (err) {
                     console.log("Error updating the stock: " + err)
                 } else {
-                    console.log('order placed!');
+                    console.log('order placed! Control-C to QUIT');
                 }
                 makeTable();
             })
