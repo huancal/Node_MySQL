@@ -20,10 +20,12 @@ connection.connect(err => {
 
 var makeTable = function () {
     connection.query("SELECT * FROM PRODUCTS", function (err, res) {
-        for (var i = 0; i < res.length; i++) {
-            console.log(res[i].ITEM_ID + " || " + res[i].PRODUCT_NAME + " || " +
-                res[i].DEPARTMENT_NAME + " || " + res[i].PRICE + " || " + res[i].STOCK_QUANTITY + "\n ");
-        }
+        console.table(res);
+        if (err) throw err;
+        // for (var i = 0; i < res.length; i++) {
+        //     console.table(res[i].ITEM_ID + " || " + res[i].PRODUCT_NAME + " || " +
+        //         res[i].DEPARTMENT_NAME + " || " + res[i].PRICE + " || " + res[i].STOCK_QUANTITY + "\n ");
+        // }
         userPrompt();
     })
 }
@@ -38,6 +40,7 @@ userPrompt = () => {
         console.log(answers.itemID);
         connection.query("SELECT * FROM PRODUCTS WHERE ITEM_ID = ?", [answers.itemID], function (err, res) {
             // console.log(res);
+            if (err) throw (err);
             var itemInventory = res[0].STOCK_QUANTITY;
             stockPrompt(itemInventory, answers.itemID);
         })
@@ -47,20 +50,21 @@ userPrompt = () => {
 stockPrompt = (itemInventory, ITEM_ID) => {
     inquirer.prompt([{
         type: 'input',
-        message: 'how many units would you like to buy?',
+        message: 'How many units would you like to buy?',
         name: 'unitstobuy'
     }]).then(answers => {
         answers.unitstobuy
         // console.log(answers.stockID);
         if (answers.unitstobuy > itemInventory)
-            console.log("sorry out of stock!");
+            console.log("Sorry Insufficient quantity!")
         else {
             var quantityLeft = itemInventory - answers.unitstobuy;
             connection.query("UPDATE PRODUCTS SET STOCK_QUANTITY = ? WHERE ITEM_ID = ?", [quantityLeft, ITEM_ID], function (err, res) {
-                if (err) throw err;
-                console.log(err);
-                console.log(res);
-                console.log('order placed!');
+                if (err) {
+                    console.log("Error updating the stock: " + err)
+                } else {
+                    console.log('order placed!');
+                }
                 makeTable();
             })
         }
